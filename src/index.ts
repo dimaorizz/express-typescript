@@ -15,6 +15,7 @@ app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
 
 app.get('/', (req: express.Request, res: express.Response) => {
+  console.log('/');
   res.sendStatus(200);
 });
 
