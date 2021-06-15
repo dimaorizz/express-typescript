@@ -1,5 +1,6 @@
 import express from 'express';
 import User, {IUser} from '../models/User';
+import Queue from '../queue';
 
 export const getAllUsers = async (req: express.Request, res: express.Response): Promise<any> => {
   try {
@@ -14,11 +15,12 @@ export const getAllUsers = async (req: express.Request, res: express.Response): 
 export const createUser = async (req: express.Request, res: express.Response): Promise<any> => {
   try {
     const newUser: IUser = new User(req.body);
-    const userExists = await User.findOne({ email: req.body.email });
-    if(userExists) {
-      return res.status(400).json({err: 'User already exists'});
-    }
-    await newUser.save();
+    // const userExists = await User.findOne({ email: req.body.email });
+    Queue.add('create-user', newUser, { delay: 60000 });
+    // if(userExists) {
+    //   return res.status(400).json({err: 'User already exists'});
+    // }
+    // await newUser.save();
     return res.status(201).json(newUser);
   } catch (err) {
     console.log(`Error while creating user: \nreq.body: ${JSON.stringify(req.body)} \nERR: ${err}`);
